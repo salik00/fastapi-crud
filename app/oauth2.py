@@ -38,3 +38,27 @@ def get_current_user(token: str = Depends(oauth2.schemes), db: Session = Depends
     token = verify_access_token(token, credentials_exception)
     user = db.query(models.User).filter(models.User.id == token.id).first()
     return user
+
+def create_reset_token(user_id:str):
+    to_encode= {
+        "user_id": user_id,
+        "purpose": "password_reset"
+    }
+    expire=datetime.now()+timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_reset_token(token:str):
+    credentials_exception = HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                         detail=f"invalid or expired reset token")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("purpose") != "password_reset":
+            raise credentials_exception
+        user_id: str = payload.get("user_id")
+        if user_id is None:
+            raise credentials_exception
+        return schemas.TokenData(id= user_id)
+    except JWTError:
+        raise credentials_exception

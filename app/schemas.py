@@ -50,3 +50,6 @@ class TokenData(BaseModel):
 class Vote(BaseModel):
     post_id: int
     dir: Annotated[int, Field(strict=True, le=1)]
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr

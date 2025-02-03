@@ -7,11 +7,13 @@ from sqlalchemy.sql.sqltypes import TIMESTAMP
 class User(Base):
     __tablename__ = "users"
     
-    id = Column(Integer, primary_key= True, nullable= False)
-    email = Column(String, unique= True, nullable= False)
-    password = Column(String, nullable = False)
-    created_at = Column(TIMESTAMP(timezone = True), nullable= False, server_default=text('now()'))
+    id = Column(Integer, primary_key=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable= False, server_default=text('now()'))
     phone_no = Column(String)
+    reset_token = Column(String, nullable=True)
+    reset_token_expiry = Column(TIMESTAMP(timezone=True), nullable=True)
 
 
 class Post(Base):
